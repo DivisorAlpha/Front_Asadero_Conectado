@@ -2,9 +2,32 @@ import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import BurguerButton from './BurguerButton';
 import pollo from '../Img/pollo1.jpg';
+import axios from 'axios';
+
+// Importamos axios para realizar peticiones HTTP y saber si el usuario esta autenticado.
 
 function Navbar() {
   const [clicked, setClicked] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  // Verifica la sesión al montar el componente
+  useEffect(() => {
+    console.log("useEffect ejecutado");
+    axios.get('http://localhost:8000/api/verificarSesion', { withCredentials: true })
+      .then(res => {
+        console.log('Respuesta sesión:', res.data);
+        if (res.data && res.data.ok) {
+          setIsAuthenticated(true);
+        } else {
+          setIsAuthenticated(false);
+        }
+      })
+      .catch(err => {
+        console.log('Error al verificar sesión:', err);
+        setIsAuthenticated(false);
+      });
+  }, []);
+
   const handleClick = () => {
     if (window.innerWidth < 769) {
       setClicked(!clicked);
@@ -38,9 +61,21 @@ function Navbar() {
           <a onClick={handleClick} href="/reseñas">Reseñas</a>
           <a onClick={handleClick} href="/reservas">Reservas</a>
           <a onClick={handleClick} href="/Api">Juega y gana!</a>
-          <a onClick={handleClick} href="/login">Iniciar Sesión</a>
-          <a onClick={handleClick} href="/register">Registrarse</a>
+          
+          {!isAuthenticated && (
+            <>
+              <a onClick={handleClick} href="/login">Iniciar Sesión</a>
+              <a onClick={handleClick} href="/register">Registrarse</a>
+            </>
+          )}
+          {isAuthenticated && (
+            <a onClick={() => {
+              axios.post('http://localhost:8000/api/cerrarSesion', {}, { withCredentials: true })
+                .then(() => window.location.reload());
+            }}>Cerrar Sesión</a>
+          )}
         </div>
+        
         <div className='burguer'>
           <BurguerButton clicked={clicked} handleClick={handleClick} />
         </div>
@@ -50,8 +85,18 @@ function Navbar() {
           <a onClick={handleClick} href="/reseñas">Reseñas</a>
           <a onClick={handleClick} href="/reservas">Reservas</a>
           <a onClick={handleClick} href="/Api">Juega y gana!</a>
-          <a onClick={handleClick} href="/login">Iniciar Sesión</a>
-          <a onClick={handleClick} href="/register">Registrarse</a>
+          {!isAuthenticated && (
+            <>
+              <a onClick={handleClick} href="/login">Iniciar Sesión</a>
+              <a onClick={handleClick} href="/register">Registrarse</a>
+            </>
+          )}
+          {isAuthenticated && (
+            <a onClick={() => {
+              axios.post('http://localhost:8000/api/cerrarSesion', {}, { withCredentials: true })
+                .then(() => window.location.reload());
+            }}>Cerrar Sesión</a>
+          )}
         </BgDiv>
       </NavContainer>
     </>
@@ -176,7 +221,7 @@ const BgDiv = styled.div`
       text-decoration: none;
       position: relative;
       padding: 10px;
-      font-size: 1.2em
+      font-size: 1.2em;
       white-space: nowrap;
       transition: color 0.3s ease;
 
