@@ -36,7 +36,11 @@ const Register = () => {
   "cedula": cedula,
   "correoElectronico": email,
   "contrasena": password
-});
+},
+{
+  withCredentials: true  // ← NECESARIO
+}
+);
 
     console.log('Usuario registrado:', response.data);
     mostrarNotificacion("Registrado con éxito", "success");

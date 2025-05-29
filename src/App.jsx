@@ -16,14 +16,14 @@ import Api from './Componentes/Api';
 import Footer from './Componentes/Footer';
 import Notificacion from './Componentes/Notificacion';
 import { useEffect } from 'react';
-import { conectarBackend } from './config';
+import axios from 'axios';
 
 
 
 function App() {
   
   useEffect(()=>{
-    conectarBackend().then(data => console.log(data))
+    axios().then(data => console.log(data))
   },[])
 
   return (
